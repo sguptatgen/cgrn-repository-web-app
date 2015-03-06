@@ -24,5 +24,9 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 
+# cGRN System Specific:
+neo4j
+system-notes
+
 # Users Environment Variables
 .lock-wscript

@@ -1,0 +1,14 @@
+{
+	"name":"TGen-Query-App",
+	"description":"Application for sending query requests to the Neo4j DB and receiving information in a structured, interactive, and graphical & tabular format.",
+	"version":"0.1.1",
+	"private":true,
+	"dependencies": {
+		"express":"3.x",
+		"neo4j":"0.2.20",
+		"swig":"0.14.0",
+		"consolidate":"0.9.1",
+		"socket.io":"0.9.16",
+		"async":"0.2.9"
+	}
+}

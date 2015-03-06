@@ -1,0 +1,77 @@
+body {font-family:'Calibri'; background-image:url('noisy_grid.png');}
+path.link {
+	stroke:rgba(74,157,240,1);
+	stroke-width:5px;
+	fill:none;
+}
+
+.node circle {fill: rgba(204,204,204,1); stroke: rgba(255,255,255,1); stroke-width: 2px;}
+.noderequests circle {fill: rgba(108,206,78,1); stroke: rgba(31,72,19,1); stroke-width:2px;}
+.noderesults circle {fill: rgba(255,8,13,1); stroke: rgba(142,0,2,1); stroke-width:2px;}
+
+text {
+	fill: #000000;
+	font: 10px sans-serif;
+	pointer-events: none;
+}
+svg {float:left;}
+table {border-collapse: collapse; font-size:16px; width:500px;}
+table td {
+	border:1px solid #000000; 
+	padding:8px;
+	text-align: left;
+	vertical-align: middle;
+}
+table th {
+	border:1px solid #000000; 
+	padding:8px;
+	text-align: center;
+	vertical-align: middle;
+}
+.tabulardiv {
+	max-height:30px;
+	width: 250px;
+	padding:5px;
+	border-radius: 5px 0px 5px 0px;
+	margin:5px;
+	background-color: rgba(0,0,0,0.5);
+	color: rgba(255,255,255,0.8);
+	overflow:hidden;
+	transition: all 500ms;
+		-webkit-transition: all 500ms;
+		-o-transition: all 500ms;
+		-moz-transition: all 500ms;
+}
+.tabulardiv:hover {
+	max-height:1000px;
+	width:500px;
+	transition: all 500ms;
+		-webkit-transition: all 500ms;
+		-o-transition: all 500ms;
+		-moz-transition: all 500ms;
+}
+#tooltip {
+	background-color: rgba(0,0,0,0.8);
+	display:none; 
+	position:absolute; top:0px; left:0px; 
+	width:350px; padding:10px;
+	border-radius: 0px 10px 15px 10px;
+	color:rgba(255,255,255,0.8);
+	z-index:1;
+	margin-right:10px;
+}
+#tooltiploader {
+	display:none; 
+	height:36px; 
+	overflow-x:hidden; 
+	background-image:url('sprites.gif'); 
+}
+.graphtraversal td {
+	border:0px;
+	padding:2px;
+}
+#tabular, #graph {float:left;}
+#tabular {width:520px;}
+h2 {margin:3px 0px;}
+h2:after {content:' ▼';}
+#snapshot {display:none;}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Query System Demo</title>
+<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="d3.v3.min.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="homepage.js"></script>
+<link rel="stylesheet" type="text/css" href="homepage.css" />
+</head>
+<body>
+Algorithm: <select id="algorithminput">
+	<option value="shortest">Shortest Path</option>
+	<option value="snapshot">Gene Snapshot</option>
+</select>
+<form id="shortest">
+	<div class="geneinputs">
+		<input type="text" value="BRCA1_HUMAN" class="geneinput"/>
+		<div id="intermediates" style="display:inline-block"></div>
+		<input type="text" value="SUV420H2" class="geneinput"/>
+		<button type="button" class="addgene">Add Gene</button>
+	</div>
+	Number of Pathways: <input type="text" value="1" class="pathwaynuminput"/>
+	Types of Relationships: <select class="reltypeinput">
+		<option value="ALL">ALL (Default)</option>
+		<option value="STATE_CHANGE">STATE_CHANGE</option>
+		<option value="CO_CONTROL">CO_CONTROL</option>
+		<option value="SEQUENTIAL_CATALYSIS">SEQUENTIAL_CATALYSIS</option>
+		<option value="COMPONENT_OF">COMPONENT_OF</option>
+		<option value="IN_SAME_COMPONENT">IN_SAME_COMPONENT</option>
+		<option value="REACTS_WITH">REACTS_WITH</option>
+		<option value="METABOLIC_CATALYSIS">METABOLIC_CATALYSIS</option>
+		<option value="GENERIC_OF">GENERIC_OF</option>
+		<option value="UPREGULATE_EXPRESSION">UPREGULATE_EXPRESSION</option>
+		<option value="DOWNREGULATE_EXPRESSION">DOWNREGULATE_EXPRESSION</option>
+		<option value="INTERACTS_WITH">INTERACTS_WITH</option>
+	</select>
+	<br/>
+	Graphs to Traverse:<br/>
+	<table class="graphtraversal">
+		<tr><td>bGRNs</td><td><input type="checkbox" class="graphtraversalinput" value="1"/>Pathway Commons 2</td></tr>
+		<tr><td>cGRNs (Glioblastoma Multiforme)</td><td><input type="checkbox" class="graphtraversalinput" value="61605"/>BANJO<input type="checkbox" class="graphtraversalinput" value="61515"/>ARACNe</td></tr>
+		<tr><td>cGRNs (Breast Invasive Carcinoma)</td><td><input type="checkbox" class="graphtraversalinput" value="92180"/>BANJO<input type="checkbox" class="graphtraversalinput" value="93582"/>ARACNe</td></tr>
+		<tr><td>cGRNs (Ovarian Serous Cystadenocarcinoma)</td><td><input type="checkbox" class="graphtraversalinput" value="97166"/>BANJO<input type="checkbox" class="graphtraversalinput" value="100534"/>ARACNe</td></tr>
+	</table>
+	<select class="cyclesinput">
+		<option value="true">Allow Cycles</option>
+		<option value="false">Disallow Cycles</option>
+	</select>
+</form>
+<form id="snapshot">
+	<div class="geneinputs">
+		<input type="text" value="BRCA1_HUMAN" class="geneinput"/>
+	</div>
+	Number of Pathways: <input type="text" value="1" class="pathwaynuminput"/>
+	Depth Range: <input type="text" value="1" class="depthinput"/> to <input type="text" value="1" class="depthinput"/>
+	Types of Relationships: <select class="reltypeinput">
+		<option value="ALL">ALL (Default)</option>
+		<option value="STATE_CHANGE">STATE_CHANGE</option>
+		<option value="CO_CONTROL">CO_CONTROL</option>
+		<option value="SEQUENTIAL_CATALYSIS">SEQUENTIAL_CATALYSIS</option>
+		<option value="COMPONENT_OF">COMPONENT_OF</option>
+		<option value="IN_SAME_COMPONENT">IN_SAME_COMPONENT</option>
+		<option value="REACTS_WITH">REACTS_WITH</option>
+		<option value="METABOLIC_CATALYSIS">METABOLIC_CATALYSIS</option>
+		<option value="GENERIC_OF">GENERIC_OF</option>
+		<option value="UPREGULATE_EXPRESSION">UPREGULATE_EXPRESSION</option>
+		<option value="DOWNREGULATE_EXPRESSION">DOWNREGULATE_EXPRESSION</option>
+		<option value="INTERACTS_WITH">INTERACTS_WITH</option>
+	</select>
+</form>
+<button type="button" id="submitquery" style="display:block;">Search</button>
+<div id="tooltip"></div>
+<div id="tabular">Tabular results will display here.</div>
+<div id="graph">Graph will display here.</div>
+</body>
+</html>
