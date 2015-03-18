@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
+	<script src="./jquery/jquery-2.1.3.min.js"></script>
+	<script src="./bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css" />
+	<style>
+		#name-form-group {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<nav class="col-xs-12 navbar navbar-default eddy-navbar">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">GRN Repository</a>
+					</div>
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav navbar-right">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Log in<span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li><a href="#">Some Link</a></li>
+									<li><a href="#">Some Link</a></li>
+									<li><a href="#">Some Link</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Some Link</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>			
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+				<h1>Login to GRN Repository</h1>
+				<form action="/" method="post" class="form-horizontal login-connect-form">
+					<div class="form-group" id="name-form-group">
+						<label for="nameInput" class="control-label col-sm-2">Name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="nameInput" placeholder="Enter full name" name="login-name">
+						</div>
+					</div>
+					<div class="form-group" id="email-form-group">
+						<label for="emailInput" class="control-label col-sm-2">Email</label>
+						<div class="col-sm-10">
+							<input required="required" type="email" class="form-control" id="emailInput" placeholder="Enter email" name="login-email">
+						</div>
+					</div>
+					<div class="form-group" id="password-form-group">
+						<label for="passwordInput" class="control-label col-sm-2">Password</label>
+						<div class="col-sm-10">
+							<input required="required"  type="password" class="form-control" id="passwordInput" placeholder="Enter password" name="login-password">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default sign-in-button" id="submit-button">Sign in</button>
+							<button type="button" class="btn btn-default register-button" id="switch-button">New User? Sign up here!</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function(){
+			$(".login-connect-form").submit(function(event) {
+				event.preventDefault();
+				var $form = $(this);
+				var submitType = ($("#submit-button").hasClass("sign-in-button")) ? "login" : "register";
+				var postReq = $.post("/",{
+					"login-name":$form.find("input[name='login-name']").val(),
+					"login-email":$form.find("input[name='login-email']").val(),
+					"login-password":$form.find("input[name='login-password']").val(),
+					"type": submitType
+				},'json').success(function(data){
+					if (data.redirect)
+                		window.location = data.redirect;
+                	else if (data.error){
+                		$("#email-form-group,#password-form-group").addClass("has-error has-feedback");
+                	}
+				});
+			});
+			$("#switch-button").click(function(){
+				console.log($(this).attr("class"));
+				if($(this).hasClass("register-button")){
+					console.log('hey');
+					$("#switch-button").removeClass("register-button").addClass("sign-in-button").html("Already a user? Sign in here.");
+					$("#submit-button").addClass("register-button").removeClass("sign-in-button").html("Register now!");
+					$("#name-form-group").css("display","block").attr("required","required");
+				}
+				else {
+					$("#switch-button").addClass("register-button").removeClass("sign-in-button").html("New User? Sign up here!");
+					$("#submit-button").removeClass("register-button").addClass("sign-in-button").html("Sign in");
+					$("#name-form-group").css("display","none").removeAttr("required");
+				}
+			});
+		});	
+	</script>
+</body>
+</html>
