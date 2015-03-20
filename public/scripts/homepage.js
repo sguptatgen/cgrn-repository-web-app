@@ -1,6 +1,6 @@
 var socket = io.connect('http://localhost:8080');
 $(document).ready(function() {
-	socket.on('queryresults', function (data) {
+	socket.on('queryResults', function (data) {
 		if(data.csv) {
 			//Raw CSV Manipulation
 				var d3csv = [];
@@ -161,7 +161,7 @@ $(document).ready(function() {
 				options.algorithm = $('#algorithminput').val(); options.pathwaynum = parseInt($('.pathwaynuminput').filter(":visible").val()); options.reltypes = $('.reltypeinput').filter(":visible").val(); options.depthmin = parseInt($('.depthinput:eq(0)').val()); options.depthmax = parseInt($('.depthinput:eq(1)').val());
 			}
 			console.log(geneparams, options);
-			socket.emit('queryrequest', {querygenes: geneparams, queryoptions: options});
+			socket.emit('queryRequest', {querygenes: geneparams, queryoptions: options});
 		});
 		$('#algorithminput').change(function(){
 			if($(this).val() === "shortest"){$('#snapshot').css("display","none"); $('#shortest').css("display","block");}

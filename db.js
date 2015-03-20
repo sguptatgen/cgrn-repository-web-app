@@ -1,6 +1,6 @@
 //Initializes the Neo4j DB and exports the resulting neodb to the app for other scripts to use.
 var neo4j = require('neo4j');
-var neodb = new neo4j.GraphDatabase('http://localhost:7474');
+var neodb = new neo4j.GraphDatabase('http://skimlab.tgen.org:7474');
 if(neodb){console.log("Neo4j Connection Initialized.");}
 module.exports.neodb = neodb;
 
