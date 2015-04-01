@@ -1,77 +1,124 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>Query System Demo</title>
-<script type="text/javascript" src="./jquery/jquery-2.1.3.min.js"></script>
-<script type="text/javascript" src="./d3/d3.min.js"></script>
-<script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
-<script type="text/javascript" src="./scripts/homepage.js"></script>
-<link rel="stylesheet" type="text/css" href="./styles/homepage.css" />
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Query System Demo</title>
+	<script src="./jquery/jquery-2.1.3.min.js"></script>
+	<script src="./d3/d3.min.js"></script>
+	<script src="./bootstrap/js/bootstrap.min.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
+	<script src="./scripts/search.js"></script>
+	<script src="./color-gen/randomColor.min.js"></script>
+	<link rel="stylesheet" href="./styles/search.css" />
+	<link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css" />
 </head>
 <body>
-Algorithm: <select id="algorithminput">
-	<option value="shortest">Shortest Path</option>
-	<option value="snapshot">Gene Snapshot</option>
-</select>
-<form id="shortest">
-	<div class="geneinputs">
-		<input type="text" value="BRCA1_HUMAN" class="geneinput"/>
-		<div id="intermediates" style="display:inline-block"></div>
-		<input type="text" value="SUV420H2" class="geneinput"/>
-		<button type="button" class="addgene">Add Gene</button>
+<div class="container-fluid">
+	<div class="row">
+		<nav class="col-xs-12 navbar navbar-default eddy-navbar">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">GRN Repository</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Log in<span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">Some Link</a></li>
+								<li><a href="#">Some Link</a></li>
+								<li><a href="#">Some Link</a></li>
+								<li class="divider"></li>
+								<li><a href="#">Some Link</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>			
 	</div>
-	Number of Pathways: <input type="text" value="1" class="pathwaynuminput"/>
-	Types of Relationships: <select class="reltypeinput">
-		<option value="ALL">ALL (Default)</option>
-		<option value="STATE_CHANGE">STATE_CHANGE</option>
-		<option value="CO_CONTROL">CO_CONTROL</option>
-		<option value="SEQUENTIAL_CATALYSIS">SEQUENTIAL_CATALYSIS</option>
-		<option value="COMPONENT_OF">COMPONENT_OF</option>
-		<option value="IN_SAME_COMPONENT">IN_SAME_COMPONENT</option>
-		<option value="REACTS_WITH">REACTS_WITH</option>
-		<option value="METABOLIC_CATALYSIS">METABOLIC_CATALYSIS</option>
-		<option value="GENERIC_OF">GENERIC_OF</option>
-		<option value="UPREGULATE_EXPRESSION">UPREGULATE_EXPRESSION</option>
-		<option value="DOWNREGULATE_EXPRESSION">DOWNREGULATE_EXPRESSION</option>
-		<option value="INTERACTS_WITH">INTERACTS_WITH</option>
-	</select>
-	<br/>
-	Graphs to Traverse:<br/>
-	<table class="graphtraversal">
-		<tr><td>bGRNs</td><td><input type="checkbox" class="graphtraversalinput" value="1"/>Pathway Commons 2</td></tr>
-		<tr><td>cGRNs (Glioblastoma Multiforme)</td><td><input type="checkbox" class="graphtraversalinput" value="61605"/>BANJO<input type="checkbox" class="graphtraversalinput" value="61515"/>ARACNe</td></tr>
-		<tr><td>cGRNs (Breast Invasive Carcinoma)</td><td><input type="checkbox" class="graphtraversalinput" value="92180"/>BANJO<input type="checkbox" class="graphtraversalinput" value="93582"/>ARACNe</td></tr>
-		<tr><td>cGRNs (Ovarian Serous Cystadenocarcinoma)</td><td><input type="checkbox" class="graphtraversalinput" value="97166"/>BANJO<input type="checkbox" class="graphtraversalinput" value="100534"/>ARACNe</td></tr>
-	</table>
-	<select class="cyclesinput">
-		<option value="true">Allow Cycles</option>
-		<option value="false">Disallow Cycles</option>
-	</select>
-</form>
-<form id="snapshot">
-	<div class="geneinputs">
-		<input type="text" value="BRCA1_HUMAN" class="geneinput"/>
+	<div class="row">
+		<div class="col-xs-12 col-md-offset-2 col-md-8">
+			<form class="form-horizontal search-form">
+				<div class="form-group" id="start-gene-form-group">
+					<label for="startGeneInput" class="control-label col-sm-2">Start Gene</label>
+					<div class="col-sm-10">
+						<input required="required" type="text" placeholder="Insert gene name." name="gene-input" id="startGeneInput"/>
+					</div>
+				</div>
+				<div class="form-group" id="intermediate-genes-form-group">
+					<label for="intermediateGeneInputs" class="control-label col-sm-2">Intermediate Genes</label>
+					<div class="col-sm-10" id="intermediateGeneInputs">
+						<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></button>
+					</div>
+				</div>
+				<div class="form-group" id="end-gene-form-group">
+					<label for="endGeneInput" class="control-label col-sm-2">End Gene</label>
+					<div class="col-sm-10">
+						<input required="required" type="text" placeholder="Insert gene name." name="gene-input" id="startGeneInput"/>
+					</div>
+				</div>
+				<div class="form-group" id="num-paths-form-group">
+					<label for="numPathsInput" class="control-label col-sm-2">Number of Pathways</label>
+					<div class="col-sm-10">
+						<input required="required" type="number" placeholder="1" name="num-paths-input" id="numPathsInput"/>
+					</div>
+				</div>
+				<div class="form-group" id="graphs-form-group">
+					<label for="graphsInput" class="control-label col-sm-2">Graphs to Traverse</label>
+					<div class="col-sm-10" id="graphsInput">
+						<div class="row">
+							<div class="col-xs-6"><em>Homo Sapiens</em> bGRNs</div>
+							<div class="col-xs-6"><input type="checkbox" name="graphs-input" value="1"/>Pathway Commons 2</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-6">Glioblastoma Multiforme cGRNs</div>
+							<div class="col-xs-6">
+								<input type="checkbox" name="graphs-input" value="61515"/>ARACNe
+								<input type="checkbox" name="graphs-input" value="61605"/>BANJO
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-6">Breast Invasive Carcinoma cGRNs</div>
+							<div class="col-xs-6">
+								<input type="checkbox" name="graphs-input" value="93582"/>ARACNe
+								<input type="checkbox" name="graphs-input" value="92180"/>BANJO
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-6">Ovarian Serous Cystadenocarcinoma cGRNs</div>
+							<div class="col-xs-6">
+								<input type="checkbox" name="graphs-input" value="100534"/>ARACNe
+								<input type="checkbox" name="graphs-input" value="97166"/>BANJO
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group" id="submit-form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary" id="submit-button">Search!</button>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
-	Number of Pathways: <input type="text" value="1" class="pathwaynuminput"/>
-	Depth Range: <input type="text" value="1" class="depthinput"/> to <input type="text" value="1" class="depthinput"/>
-	Types of Relationships: <select class="reltypeinput">
-		<option value="ALL">ALL (Default)</option>
-		<option value="STATE_CHANGE">STATE_CHANGE</option>
-		<option value="CO_CONTROL">CO_CONTROL</option>
-		<option value="SEQUENTIAL_CATALYSIS">SEQUENTIAL_CATALYSIS</option>
-		<option value="COMPONENT_OF">COMPONENT_OF</option>
-		<option value="IN_SAME_COMPONENT">IN_SAME_COMPONENT</option>
-		<option value="REACTS_WITH">REACTS_WITH</option>
-		<option value="METABOLIC_CATALYSIS">METABOLIC_CATALYSIS</option>
-		<option value="GENERIC_OF">GENERIC_OF</option>
-		<option value="UPREGULATE_EXPRESSION">UPREGULATE_EXPRESSION</option>
-		<option value="DOWNREGULATE_EXPRESSION">DOWNREGULATE_EXPRESSION</option>
-		<option value="INTERACTS_WITH">INTERACTS_WITH</option>
-	</select>
-</form>
-<button type="button" id="submitquery" style="display:block;">Search</button>
-<div id="tooltip"></div>
-<div id="tabular">Tabular results will display here.</div>
-<div id="graph">Graph will display here.</div>
+	<div class="row">
+		<div id="tooltip"></div>
+		<!--<div class="col-xs-12 col-sm-4">
+			<div id="tabular">Tabular results will display here.</div>
+		</div>-->
+		<div class="col-xs-12">
+			<div id="graph">Graph will display here.</div>
+		</div>
+	</div>
+</div>
 </body>
 </html>

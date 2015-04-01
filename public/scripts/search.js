@@ -1,41 +1,49 @@
 var socket = io.connect('http://localhost:8080');
 $(document).ready(function() {
 	socket.on('queryResults', function (data) {
-		if(data.csv) {
-			//Raw CSV Manipulation
+		if(data.results) {
 				var d3csv = [];
-				data.csv.forEach(function(element,index,array){
-					for(i=0; i<element.length; i++){
-						if(element[i][8] === "EQUALS"){
-							if(element[i-1] && element[i+1]){element[i+1][0] = element[i-1][1]; element[i+1][2] = element[i-1][3];}
-							else if(!element[i-1]){element[i+1][0] = element[i][0]; element[i+1][2] = element[i][2];}
-							else if(!element[i+1]){element[i-1][1] = element[i][1]; element[i-1][3] = element[i][3];}
-	 						element.splice(i,1);
+				data.results.forEach(function(pathway,pathNum){
+					pathway.forEach(function(relData, index, array){
+						var rel = relData.rel;
+						var start = relData.start;
+						var end = relData.end;
+						if(rel.relType === "EQUALS"){
+							if(index !== array.length-1){
+								array[index+1].start = relData.start;
+								array.splice(index,1);
+							}
+							else {
+								array[index-1].end = relData.end;
+								array.splice(index,1);
+							}
 						}
-					}
+						else {
+							d3csv.push([start.name,end.name,start.id,end.id,start.graphid,end.graphid,rel.id,rel.relType,pathNum].join(','));
+						}
+					});
 				});
-				$('#tabular').html('');
+				d3csv = 'source,target,sourceId,targetId,sourceGraph,targetGraph,relId,relType,pathway\n' + d3csv.join('\n');
+				/*$('#tabular').html('');
 				data.csv.forEach(function(element,index,array) {
 					$("#tabular").append('<div class="tabulardiv"><h2 class="resultheaders" id="result' + index + '">Pathway Result ' + (index + 1) + '</h2><table class="results"><tr><th>Start Biomolecule</th><th>End Biomolecule</th><th>Interaction Type</th></tr></table></div>');
 					for(i=0; i<element.length; i++){
 						$(".results:eq(" + index + ")").append('<tr><td>' + element[i][0] + '</td><td>' + element[i][1] + '</td><td>' + element[i][8].toLowerCase().replace(/\_/," ") + '</tr>');
 						d3csv.push(element[i]+','+index);
 					}
-				});
+				});*/
 			//Graph Generation
 				var nodes = {};
-				d3csv = 'source,target,sourceid,targetid,sourcegraph,targetgraph,relid,relcolor,reltype,graphcolor,pathway\n' + d3csv.join('\n');
-				console.log(d3csv);
 				var links = d3.csv.parse(d3csv);
 				links.forEach(function(link) {
-					link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, nodeid: link.sourceid, graphid: link.sourcegraph});
-					link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, nodeid: link.targetid, graphid: link.targetgraph});
-					link.relcolor = +link.relcolor;
+					link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, nodeid: link.sourceId, graphid: link.sourceGraph});
+					link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, nodeid: link.targetId, graphid: link.targetgraph});
+					link.relColor = randomColor({luminosity: 'bright', format: 'rgb'});
 				});
-				var width = 600, height = 600, color = ["#2ca02c", "#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+				var width = 600, height = 600;
 				var force = d3.layout.force().nodes(d3.values(nodes)).links(links).size([width, height]).linkDistance(110).charge(-1300).gravity(0.3).on("tick", tick).start();
 				d3.select("#graph").html('').select("*").remove();
-				var svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+				var svg = d3.select("#graph").append("svg");
 
 				// build the arrow.
 				var defs = svg.append("svg:defs");
@@ -48,15 +56,15 @@ $(document).ready(function() {
 				var feMerge = glow.append("feMerge"); feMerge.append("feMergeNode").attr("in","offsetBlur"); feMerge.append("feMergeNode") .attr("in", "SourceGraphic");
 
 				// add the links and the arrows
-				var path = svg.append("svg:g").selectAll("path").data(force.links()).enter().append("svg:path").attr("class", function(d){return "link pathway"+d.pathway;}).attr("id",function(d) { return "link_" + d.relid}).attr("title",function(d){return d.source.name + "*_" + d.target.name + "*_" + d.reltype;}).style("stroke",function(d){return color[d.graphcolor];}).attr("viewBox","0 0 50 50").attr('marker-end','url(#end)');
+				var path = svg.append("svg:g").selectAll("path").data(force.links()).enter().append("svg:path").attr("class", function(d){return "link pathway"+d.pathway;}).attr("id",function(d) { return "link_" + d.relId}).attr("title",function(d){return d.source.name + "*_" + d.target.name + "*_" + d.relType;}).style("stroke",function(d){return randomColor({luminosity: 'bright', format: 'rgb'});}).attr("viewBox","0 0 50 50").attr('marker-end','url(#end)');
 
 				// define the nodes
 				var node = svg.selectAll(".node").data(force.nodes()).enter().append("g").attr("class", "node").attr("id",function(d) { return "node_" + d.nodeid; }).attr("title",function(d){return d.nodeid;}).call(force.drag);
 
 				// add the nodes
 				node.append("circle").attr("r", "10").style("fill","rgba(0,112,255,1)");
-				var genelabel = node.append("text").attr("dy", "0.3em").style('font-size','14px').style('text-anchor','middle').text(function(d) { return d.name; });
-				$.each(data.noderequests,function(index,elem){
+				var geneLabel = node.append("text").attr("dy", "0.3em").style('font-size','14px').style('text-anchor','middle').text(function(d) { return d.name; });
+				$.each(data.nodeRequests,function(index,elem){
 					$("#node_" + elem +" circle").css("fill","rgba(227,66,52,1)");
 				});
 				// add the curvy lines
@@ -72,13 +80,20 @@ $(document).ready(function() {
 					node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 					if(force.alpha() < 0.01){$(".pathway0").attr("filter","url(#glow)");};
 				}
-				$(".resultheaders").click(function(){
+				resize();
+				d3.select(window).on("resize", resize);
+				function resize() {
+					width = window.innerWidth, height = 600;
+					svg.attr("width", width).attr("height", height);
+					force.size([width, height]).resume();
+				}
+				/*$(".resultheaders").click(function(){
 					$(".link").attr("filter","");
 					$(".pathway"+$(".resultheaders").index(this)).attr("filter","url(#glow)");
-				});
+				});*/
 		} 
 		else {console.log("There is a problem:", data);}
-		//Annotation Tooltip
+		/*//Annotation Tooltip
 			$(".node, .link").hover(function(evt){
 				var notesid = parseInt($(this).attr("id").replace(/node\_|link\_/,"")), idtype;
 				console.log(notesid);
@@ -95,11 +110,11 @@ $(document).ready(function() {
 			},function(){
 				$("#tooltip").fadeOut(300, 'swing');
 				$("#tooltip").html("");
-			});	
+			});	*/
 		//Timer			
-			if($("table").length == $('#pathwaynuminput').val()){socket.emit("time",{});}
+			//if($("table").length == $('#pathwaynuminput').val()){socket.emit("time",{});}
 	});
-	//Annotations
+	/*//Annotations
 		socket.on('annotationreturn', function (data) {
 			if(data.UniProt) {
 				$.ajax({
@@ -136,37 +151,30 @@ $(document).ready(function() {
 				});
 			}			 
 			else if (data.err === 'noresults') {$("#tooltip").html($("#tooltip").html().replace(/Annotations loading\.\.\./, "")); $("#tooltip").append("No annotations available.<br/>");}
-		});
-	//Error Handling for Query
+		});*/
+	/*//Error Handling for Query
 		socket.on('queryerror', function(data){
 			var errormessage;
 			if(data.error.message.search("^timeout occured")!==-1){errormessage = "Sorry, there were no results that could be relayed in time. Please try another query."}
 			$('#graph').html(errormessage);
-		});
+		});*/
 	//Submitting a Query + Form JS
-		$(".addgene").click(function() {
-		$('#intermediates').append('<input type="text" value="Type a gene here!" class="geneinput"/>');
+		$(".search-form").submit(function(event) {
+			event.preventDefault();
 		});
-		$('#submitquery').click(function() {
+		$("#intermediateGeneInputs button").click(function() {
+			$('#intermediateGeneInputs').append('<input type="text" placeholder="Insert gene name." name="gene-input"/>');
+		});
+		$('#submit-button').click(function() {
 			$("#graph").html("Loading...");
-			if ($('#algorithminput').val() === "shortest") {
-				var geneparams = [], options = {}; options.graphs = [];
-				for(i=0; i<$('.geneinput').filter(":visible").length; i++) {geneparams.push($('.geneinput').filter(":visible").eq(i).val());}
-				for(j=0; j<$('.graphtraversalinput:checked').filter(":visible").length; j++) {options.graphs.push($('.graphtraversalinput:checked').filter(":visible").eq(j).val());}
-				options.algorithm = $('#algorithminput').val(); options.pathwaynum = $('.pathwaynuminput').filter(":visible").val(); options.reltypes = $('.reltypeinput').filter(":visible").val(); options.cycles = $(".cyclesinput").filter(":visible").val();
-			}
-			else if ($('#algorithminput').val() === "snapshot") {
-				var geneparams = [], options = {}; options.graphs = [];
-				for(i=0; i<$('.geneinput').filter(":visible").length; i++) {geneparams.push($('.geneinput').filter(":visible").eq(i).val());}
-				options.algorithm = $('#algorithminput').val(); options.pathwaynum = parseInt($('.pathwaynuminput').filter(":visible").val()); options.reltypes = $('.reltypeinput').filter(":visible").val(); options.depthmin = parseInt($('.depthinput:eq(0)').val()); options.depthmax = parseInt($('.depthinput:eq(1)').val());
-			}
-			console.log(geneparams, options);
-			socket.emit('queryRequest', {querygenes: geneparams, queryoptions: options});
+			var geneParams = [], optionParams = {graphs: []};
+			$('input[name=gene-input]').each(function(){
+				geneParams.push($(this).val());
+			});
+			$('input[name=graphs-input]:checked').each(function(){
+				optionParams.graphs.push($(this).val());
+			});
+			optionParams.numPaths = $('input[name=num-paths-input]').val();
+			socket.emit('queryRequest', {"geneParams": geneParams, "optionParams": optionParams});
 		});
-		$('#algorithminput').change(function(){
-			if($(this).val() === "shortest"){$('#snapshot').css("display","none"); $('#shortest').css("display","block");}
-			else if($(this).val() === "snapshot"){$('#snapshot').css("display","block"); $('#shortest').css("display","none");}
-		});
-		$('.geneinput').focus(function(){if($(this).val().search("^Type ")!==-1){$(this).data("help",$(this).val()); $(this).val('');}});
-		$('.geneinput').blur(function(){if($(this).val()===""){$(this).val($(this).data("help"));}});
 });	

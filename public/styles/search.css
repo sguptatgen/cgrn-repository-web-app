@@ -1,0 +1,27 @@
+path.link {
+	stroke:rgba(74,157,240,1);
+	stroke-width:5px;
+	fill:none;
+}
+
+.node circle {fill: rgba(204,204,204,1); stroke: rgba(255,255,255,1); stroke-width: 2px;}
+.noderequests circle {fill: rgba(108,206,78,1); stroke: rgba(31,72,19,1); stroke-width:2px;}
+.noderesults circle {fill: rgba(255,8,13,1); stroke: rgba(142,0,2,1); stroke-width:2px;}
+
+text {
+	fill: #000000;
+	font: 10px sans-serif;
+	pointer-events: none;
+}
+svg {float:left;}
+
+#tooltip {
+	background-color: rgba(0,0,0,0.8);
+	display:none; 
+	position:absolute; top:0px; left:0px; 
+	width:350px; padding:10px;
+	border-radius: 0px 10px 15px 10px;
+	color:rgba(255,255,255,0.8);
+	z-index:1;
+	margin-right:10px;
+}
