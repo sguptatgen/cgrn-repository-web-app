@@ -25,8 +25,8 @@ build/Release
 node_modules
 
 # cGRN System Specific:
-neo4j-2.1.7
-mongodb-3.0.1
+neo4j-2.0.4
+mongodb-3.0
 system-notes
 
 # Users Environment Variables

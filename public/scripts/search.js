@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://skimlab.tgen.org:8080');
 $(document).ready(function() {
 	socket.on('queryResults', function (data) {
 		if(data.results) {
