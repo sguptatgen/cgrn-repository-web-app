@@ -5,7 +5,7 @@ exec("./mongodb-3.0/bin/mongod --dbpath ./mongodb-3.0/data/db --fork --logpath .
 	sys.puts(stdout);
 	exec("./neo4j-2.0.4/bin/neo4j start", function(error, stdout, stderr){
 		sys.puts(stdout);
-		exec("forever start index.js", function(error, stdout, stderr){
+		exec("forever start --uid 'production' index.js", function(error, stdout, stderr){
 			sys.puts(stdout);
 		});
 	});
