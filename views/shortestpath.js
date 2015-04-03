@@ -1,13 +1,13 @@
 var db = require('./../db'), async = require("async"), path = require('path');
 
 module.exports.get = function(req,res){
-	if (req.session.user) res.sendFile(path.join(__dirname, '../templates', 'search.html'));
+	if (req.session.user) res.sendFile(path.join(__dirname, '../templates', 'shortestpath.html'));
 	else res.redirect('/');
 }
 module.exports.loader = function(socket) {
 	var executeQuery = function(data) {
 		var getShortestPaths = function() {
-			var depth = 1, numPathsRetrived=0; 
+			var depth = 1, numPathsRetrived=0, readyPathways=[]; 
 			var buildParams = function () {
 				var params = {}
 				params.startnode = data.geneParams[0];
@@ -58,12 +58,14 @@ module.exports.loader = function(socket) {
 							console.log("Sending " + prunedPathways.length + " pathways to the user.");
 							if (numPathsRetrived < parseInt(data.optionParams.numPaths)) {
 								depth++;
+								readyPathways = readyPathways.concat(prunedPathways);
 								db.neodb.query(buildQuery(),params,queryCallback);
 							}
 							else if (numPathsRetrived >= parseInt(data.optionParams.numPaths)) {
+								readyPathways = readyPathways.concat(prunedPathways);
 								console.log("Query completed!");
+								socket.emit('queryResults',{"results":readyPathways, "nodeRequests":data.geneParams});
 							}
-							socket.emit('queryResults',{"results":prunedPathways, "nodeRequests":data.geneParams});
 						});
 						
 					});

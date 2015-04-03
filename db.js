@@ -4,12 +4,6 @@ var neodb = new neo4j.GraphDatabase('http://skimlab.tgen.org:7474');
 if(neodb){console.log("Neo4j Connection Initialized.");}
 module.exports.neodb = neodb;
 
-var mongodb = require('mongodb').MongoClient;
-module.exports.mongodb = mongodb;
-//var mongoURI = 'mongodb://skimlab.tgen.org:27017/grnsearchtest';
-var mongoURI = 'mongodb://skimlab.tgen.org:27016/grnsearchtest';
-module.exports.mongoURI = mongoURI;
-
 var mongodb = require('mongodb');
 module.exports.initializeMongo = function (callback) {
   var server = new mongodb.Server("skimlab.tgen.org", 27017, {});

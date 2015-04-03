@@ -1,4 +1,4 @@
-var socket = io.connect('http://skimlab.tgen.org:8080');
+var socket = io.connect(window.location.origin);
 $(document).ready(function() {
 	socket.on('queryResults', function (data) {
 		if(data.results) {
@@ -8,7 +8,7 @@ $(document).ready(function() {
 						var rel = relData.rel;
 						var start = relData.start;
 						var end = relData.end;
-						if(rel.relType === "EQUALS"){
+						/*if(rel.relType === "EQUALS"){
 							if(index !== array.length-1){
 								array[index+1].start = relData.start;
 								array.splice(index,1);
@@ -18,9 +18,9 @@ $(document).ready(function() {
 								array.splice(index,1);
 							}
 						}
-						else {
+						else {*/
 							d3csv.push([start.name,end.name,start.id,end.id,start.graphid,end.graphid,rel.id,rel.relType,pathNum].join(','));
-						}
+						//}
 					});
 				});
 				d3csv = 'source,target,sourceId,targetId,sourceGraph,targetGraph,relId,relType,pathway\n' + d3csv.join('\n');
@@ -33,6 +33,7 @@ $(document).ready(function() {
 					}
 				});*/
 			//Graph Generation
+				console.log(d3csv);
 				var nodes = {};
 				var links = d3.csv.parse(d3csv);
 				links.forEach(function(link) {

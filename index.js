@@ -22,15 +22,17 @@ db.initializeMongo(function (err) {
 	if (err) throw err;
 	console.log("Successfully connected to MongoDB.");
 	var loginpage = require('./views/loginpage.js');
-	var search = require('./views/search.js');
+	//var search = require('./views/search.js');
+	var shortestpath = require('./views/shortestpath.js');
+	//var genesetgraph = require('./views/genesetgraph.js');
 	app.get('/', loginpage.get);
 	app.post('/', loginpage.post);
-	app.get('/search', search.get);
-	io.on('connection', search.loader);
+	//app.get('/search', search.get);
+	app.get('/shortestpath', shortestpath.get);
+	//app.get('/genesetgraph', genesetgraph.get);
+	io.on('connection', shortestpath.loader);
 
 	http.listen(app.get('port'), function(){
 		console.log('listening on:' + app.get('port'));
 	});
 });
-
-//io.sockets.on('connection', homepage.loader); 

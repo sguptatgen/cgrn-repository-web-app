@@ -19,7 +19,7 @@ module.exports.post = function(req,res){
 				req.session.user = docs[0];
 				db.userData.update({email:docs[0].email}, {$push:{logins: new Date().toISOString()}}, function(err, result){
 					if(err) throw err;
-					res.send({redirect:'/search'});
+					res.send({redirect:'/shortestpath'});
 				});
 			}
 		});
@@ -33,7 +33,7 @@ module.exports.post = function(req,res){
 				db.userData.insert(newUserDoc,function(err,records){
 					if(err) throw err;
 					req.session.user = records[0];
-					res.send({redirect:'/search'});
+					res.send({redirect:'/shortestpath'});
 				});
 			}
 		});
